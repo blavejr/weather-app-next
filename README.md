@@ -3,6 +3,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 ## Getting Started
 I have not changed much from the setup so everything should be standard
 
+Add your token in `src/api/weather.ts`
+
 First, run the development server:
 
 ```bash
