@@ -3,7 +3,7 @@ import api from "./index";
 import { ILocationDetails, IPlace } from "@/interfaces/location";
 
 // This should be on the backend
-const API_KEY = 'b5042659f2b6c3f9d4ea89e203a77d8b'
+const API_KEY = 'API_TOKEN'
 
 interface IQueryParams {
   lat?: number;
