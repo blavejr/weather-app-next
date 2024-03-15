@@ -1,0 +1,43 @@
+.placeContainer {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    min-width: 22em;
+    
+    .placeName {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      flex: 1;
+      flex-shrink: 0;
+    }
+  
+    .placeFullName {
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+  
+    .currentTime {
+      font-size: 1rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+  
+    .temperature {
+      font-size: 4rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+
+    .image {
+      margin-bottom: 1rem;
+    }
+  }
+  

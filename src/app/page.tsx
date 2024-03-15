@@ -1,95 +1,83 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use strict";
+"use client";
+
+import styles from "./page.module.scss";
+import React, { useEffect } from "react";
+import {
+  getPlaceDetails,
+  getWeatherData,
+  getWeatherForeCastData,
+} from "../api/weather";
+import { IWeatherData } from "@/interfaces/weather";
+import { useWeatherContext } from "@/context/weather.context";
+import { ILocationDetails, IPlace } from "@/interfaces/location";
+import LWeatherDetails from "@/components/LWeatherDetails/LWeatherDetails";
+import cx from "classnames";
+import locationsArray from "@/utils/location";
+import LForcastDetails from "@/components/LForcastDetails/LForcastDetails";
 
 export default function Home() {
+  // I am using context here just to demonstrate how to use it
+  const { weatherData, setWeatherData } = useWeatherContext();
+  const [forcastData, setForcastData] = React.useState<Array<IWeatherData>>([]);
+  // I am using state here to demonstrate how to use it
+  const [locationDets, setLocationDets] =
+    React.useState<ILocationDetails | null>(null);
+  const [locationIndex, setLocationIndex] = React.useState<number>(0);
+  const locations = locationsArray;
+
+  const getLocationData = (location: IPlace) => {
+    getPlaceDetails(location, 1).then((data: ILocationDetails) => {
+      setLocationDets(data);
+    });
+    getWeatherData(location).then((data: IWeatherData) => {
+      setWeatherData(data);
+    });
+    getWeatherForeCastData(locations[locationIndex], "metric").then(
+      (data: Array<IWeatherData>) => {
+        setForcastData(data);
+      }
+    );
+  };
+
+  useEffect(() => {
+    getLocationData(locations[0]);
+  }, []);
+
+  const handleNextLocation = () => {
+    setLocationIndex((prev) => (prev + 1) % locations.length);
+    getLocationData(locations[locationIndex]);
+  };
+
+  const handlePrevLocation = () => {
+    setLocationIndex(
+      (prev) => (prev - 1 + locations.length) % locations.length
+    );
+    getLocationData(locations[locationIndex]);
+  };
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+      <div className={styles.container}>
+        {weatherData && locationDets ? (
+          // Prop drilling here for simplicity but I could use context
+          <LWeatherDetails
+            locationDets={locationDets}
+            weatherData={weatherData}
+          />
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+      <div className={styles.buttonsContainer}>
+        <div className={cx(styles.button)} onClick={handlePrevLocation}>
+          Back
+        </div>
+        <div className={cx(styles.button)} onClick={handleNextLocation}>
+          Next
         </div>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <LForcastDetails forcastData={forcastData} />
     </main>
   );
 }
